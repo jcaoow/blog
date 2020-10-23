@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <div class="cat-container" v-show="isLoaded">
+    <div class="cat-container">
       <canvas
         id="vuepress-cat"
         :width="style.width"
@@ -13,12 +13,12 @@
 </template>
 
 <script>
+  import { mapState } from 'vuex';
   import live2dJSString from './plugins/live2d';
   export default {
     name: 'cat',
     data() {
       return {
-        isLoaded: true,
         model: {
           blackCat:
             'https://cdn.jsdelivr.net/gh/QiShaoXuan/live2DModel@1.0.0/live2d-widget-model-hijiki/assets/hijiki.model.json',
@@ -31,20 +31,16 @@
         }
       };
     },
+    computed: {
+      ...mapState({
+        isShowCat: state => state.isShowCat
+      })
+    },
     mounted() {
       this.initCat();
     },
     methods: {
       initCat() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        )
-          ? true
-          : false;
-        if (isMobile) {
-          this.isLoaded = false;
-          return console.log('mobile do not load model');
-        }
         if (!window.loadlive2d) {
           const script = document.createElement('script');
           script.innerHTML = live2dJSString;
