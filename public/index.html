@@ -6,6 +6,27 @@
     <meta name="viewport" content="width=device-width,initial-scale=1.0">
     <link rel="icon" href="<%= BASE_URL %>favicon.ico">
     <title><%= htmlWebpackPlugin.options.title %></title>
+    <script>
+      (function (a, b) {
+        // 页面自适应脚本
+        var c = a.documentElement,
+          d = "orientationchange" in window ? "orientationchange" : "resize",
+          e = window.recalc = function () {
+            var a = c.clientWidth;
+            if (a) {
+              var fontsize = Math.floor(100 * (a / 1920));
+              if (fontsize < 50) {
+                fontsize = 50;
+              }
+              if (fontsize >= 100) {
+                fontsize = 100;
+              }
+              c.style.fontSize = fontsize + "px"
+            }
+          };
+        a.addEventListener && (b.addEventListener(d, e, !1), a.addEventListener("DOMContentLoaded", e, !1));
+      })(document, window);
+    </script>
   </head>
   <body>
     <noscript>

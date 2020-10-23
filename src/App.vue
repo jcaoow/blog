@@ -3,9 +3,10 @@
     <div class="cat-container">
       <canvas
         id="vuepress-cat"
-        :width="style.width"
-        :height="style.height"
+        width="400"
+        height="500"
         class="live2d"
+        :style="style"
       ></canvas>
     </div>
     <router-view />
@@ -20,15 +21,9 @@
     data() {
       return {
         model: {
-          blackCat:
-            'https://cdn.jsdelivr.net/gh/QiShaoXuan/live2DModel@1.0.0/live2d-widget-model-hijiki/assets/hijiki.model.json',
-          whiteCat:
-            'https://cdn.jsdelivr.net/gh/QiShaoXuan/live2DModel@1.0.0/live2d-widget-model-tororo/assets/tororo.model.json'
+          whiteCat: '/live2d/cat/tororo.model.json'
         },
-        style: {
-          width: 200,
-          height: 250
-        }
+        style: null
       };
     },
     computed: {
@@ -41,6 +36,13 @@
     },
     methods: {
       initCat() {
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+        )
+          ? true
+          : false;
+        if (isMobile)  this.style = { width: '100px', height: '125px' };
+        else this.style = { width: '200px', height: '250px' };
         if (!window.loadlive2d) {
           const script = document.createElement('script');
           script.innerHTML = live2dJSString;
