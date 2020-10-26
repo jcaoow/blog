@@ -1,88 +1,91 @@
 <template>
   <div id="app">
     <div class="cat-container">
-      <canvas
-        id="vuepress-cat"
-        width="400"
-        height="500"
-        class="live2d"
-        :style="style"
-      ></canvas>
+      <canvas id="vuepress-cat" width="400" height="500" class="live2d" :style="style"></canvas>
     </div>
     <router-view />
   </div>
 </template>
 
 <script>
-  import { mapState } from 'vuex';
-  import live2dJSString from './plugins/live2d';
-  export default {
-    name: 'cat',
-    data() {
-      return {
-        model: {
-          whiteCat: '/live2d/cat/tororo.model.json'
-        },
-        style: null
-      };
-    },
-    computed: {
-      ...mapState({
-        isShowCat: state => state.isShowCat
-      })
-    },
-    mounted() {
+import { mapState, mapMutations } from 'vuex';
+import live2dJSString from './plugins/live2d';
+export default {
+  name: 'App',
+  data() {
+    return {
+      model: {
+        whiteCat: '/live2d/cat/tororo.model.json'
+      },
+      style: null
+    };
+  },
+  computed: {
+    ...mapState({
+      isShowCat: state => state.isShowCat,
+      isPortrait: state => state.isPortrait
+    })
+  },
+  watch: {
+    isPortrait() {
       this.initCat();
-    },
-    methods: {
-      initCat() {
-        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-          navigator.userAgent
-        )
-          ? true
-          : false;
-        if (isMobile)  this.style = { width: '100px', height: '125px' };
-        else this.style = { width: '200px', height: '250px' };
-        if (!window.loadlive2d) {
-          const script = document.createElement('script');
-          script.innerHTML = live2dJSString;
-          document.body.appendChild(script);
-        }
-        setTimeout(() => {
-          window.loadlive2d(
-            'vuepress-cat',
-            this.model.whiteCat
-          );
-        }, 0);
-      }
     }
-  };
+  },
+  created() {
+    window.addEventListener('resize', this.handleResize);
+  },
+  mounted() {
+    this.initCat();
+  },
+  beforeDestroy() {
+    window.removeEventListener('resize', this.handleResize);
+  },
+  methods: {
+    ...mapMutations({
+      setIsPortrait: 'SET_IS_PORTRAIT'
+    }),
+    initCat() {
+      if (this.isPortrait) this.style = { width: '100px', height: '125px' };
+      else this.style = { width: '200px', height: '250px' };
+      if (!window.loadlive2d) {
+        const script = document.createElement('script');
+        script.innerHTML = live2dJSString;
+        document.body.appendChild(script);
+      }
+      window.loadlive2d('vuepress-cat', this.model.whiteCat);
+    },
+    handleResize() {
+      this.setIsPortrait();
+    }
+  }
+};
 </script>
 
 <style lang="less">
-  @import url('./assets/css/common.less');
+@import url('./assets/css/reset.less');
+@import url('./assets/css/common.less');
 
-  #app {
-    font-family: Avenir, Helvetica, Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-align: center;
-    color: #2c3e50;
-  }
+#app {
+  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell,
+    Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  color: #222831;
+  font-size: 14px;
+}
 
-  .cat-container {
+.cat-container {
+  position: fixed;
+  right: 50px;
+  bottom: 100px;
+  color: #00adb5;
+  z-index: 99999;
+  #vuepress-cat {
     position: fixed;
-    right: 50px;
-    bottom: 100px;
-    color: #00adb5;
+    opacity: 0.9;
+    right: 0px;
+    bottom: -20px;
     z-index: 99999;
-    #vuepress-cat {
-      position: fixed;
-      opacity: 0.9;
-      right: 0px;
-      bottom: -20px;
-      z-index: 99999;
-      pointer-events: none;
-    }
+    pointer-events: none;
+    transition: all 0.3s;
   }
+}
 </style>
